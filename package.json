@@ -35,5 +35,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@tonaljs/tonal": "^4.0.1",
+    "antd": "^4.3.3",
+    "webmidi": "^2.5.1"
   }
 }
