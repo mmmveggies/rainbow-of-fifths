@@ -1,5 +1,6 @@
 import React from 'react'
 import { Midi, Note } from '@tonaljs/tonal'
+import { intBetween } from '../utils'
 
 // Thanks to https://en.wikipedia.org/wiki/User:Lanttuloora for measurements
 // taken from https://commons.wikimedia.org/wiki/File:PianoKeyboard.svg
@@ -9,7 +10,7 @@ const WIDTH_BLACK = 13
 const HEIGHT_WHITE = 120
 const HEIGHT_BLACK = 80
 const OFFSET_BLACK: Record<number, number> = {
-	1: -6 - (2 / 3),
+	1: -8 - (2 / 3),
 	3: -4 - (1 / 3),
 	6: -9.75,
 	8: -6.75,
@@ -23,11 +24,6 @@ const isAccidental = (chroma: number) => (
 /** will throw on invalid midi value */
 const isAccidentalMidi = (midi: number) => (
 	isAccidental(Note.chroma(Midi.midiToNoteName(midi))!)
-)
-
-/** inclusive between */
-const intBetween = (n: number, min: number, max: number) => (
-	Math.min(Math.max(Math.floor(n), min), max)
 )
 
 export interface KeyboardProps {
@@ -50,7 +46,6 @@ export interface KeyboardProps {
 
 	svgProps?: React.SVGProps<SVGSVGElement>
 }
-
 
 export function Keyboard({
 	low = 21,

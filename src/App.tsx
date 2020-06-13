@@ -2,6 +2,7 @@ import React from 'react';
 import { KeyboardSource } from './components';
 import { useSources } from './hooks';
 import { Card, Divider } from 'antd';
+import { SourceDashboard } from './components/source-dashboard';
 
 export default function App() {
   const sources = useSources()
@@ -24,10 +25,7 @@ export default function App() {
             </>
           )}
         >
-          <KeyboardSource
-            source={source}
-            svgProps={{ width: '100%' }}
-          />
+          <SourceDashboard source={source} />
         </Card>
       ))}
     </>

@@ -9,7 +9,10 @@ export function useSourceNotes(source: Input) {
 	React.useEffect(
 		() => {
 			const onNoteOn = (event: InputEventNoteon) => {
-				setNotes((curr) => ({ ...curr, [event.note.number]: event }))
+				setNotes((curr) => {
+					const next = { ...curr, [event.note.number]: event }
+					return next
+				})
 			}
 			const onNoteOff = (event: InputEventNoteoff) => {
 				setNotes((curr) => {
