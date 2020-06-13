@@ -1,20 +1,34 @@
 import React from 'react'
+import { Midi, Note } from '@tonaljs/tonal'
+
+// Thanks to https://en.wikipedia.org/wiki/User:Lanttuloora for measurements
+// taken from https://commons.wikimedia.org/wiki/File:PianoKeyboard.svg
 
 const WIDTH_WHITE = 23
 const WIDTH_BLACK = 13
 const HEIGHT_WHITE = 120
 const HEIGHT_BLACK = 80
+const OFFSET_BLACK: Record<number, number> = {
+	1: -6 - (2 / 3),
+	3: -4 - (1 / 3),
+	6: -9.75,
+	8: -6.75,
+	10: -3.25,
+}
+
+const isAccidental = (chroma: number) => (
+	[1, 3, 6, 8, 10].includes(chroma)
+)
+
+/** will throw on invalid midi value */
+const isAccidentalMidi = (midi: number) => (
+	isAccidental(Note.chroma(Midi.midiToNoteName(midi))!)
+)
 
 /** inclusive between */
-function intBetween(n: number, min: number, max: number) {
-	return Math.min(Math.max(Math.floor(n), min), max)
-}
-
-type DivProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
-export interface KeyboardKeyProps extends DivProps {
-	midi: number
-}
-
+const intBetween = (n: number, min: number, max: number) => (
+	Math.min(Math.max(Math.floor(n), min), max)
+)
 
 export interface KeyboardProps {
 	/**
@@ -32,81 +46,107 @@ export interface KeyboardProps {
 	/**
 	 * 
 	 */
-	keyProps?: Record<string, KeyboardKeyProps>
+	keyProps?: Record<string, React.SVGProps<SVGRectElement>>
+
+	svgProps?: React.SVGProps<SVGSVGElement>
 }
 
 
 export function Keyboard({
 	low = 21,
-	high = 108,
-	keyProps
+	high = 109,
+	keyProps,
+	svgProps,
 }: KeyboardProps) {
 
-	const start = intBetween(low, 21, 107)
-	const end = intBetween(high, 21, 107)
+	const start = intBetween(low, 21, 109)
+	const end = intBetween(high, 21, 109)
 	const length = Math.max(0, end - start)
 
 	// pad out the with white notes to
 	// ensure framing is an even rectagle
-	const notes = React.useMemo(
+	const [whiteKeys, blackKeys] = React.useMemo(
 		() => {
-			const range = Array.from({ length }, (_, i) => {
-				const midi = start + i
-				const octave = Math.floor((midi - 9) / 12)
-				const position = midi - (octave * 12)
-				const accidental = [1, 3, 6, 8, 10].includes(position)
+			const midis = Array.from({ length }, (_, index) => (
+				start + index
+			))
+
+			const head = midis[0]
+			const last = midis[midis.length - 1]
+
+			if (isAccidentalMidi(head)) {
+				midis.unshift(head - 1)
+			}
+			if (isAccidentalMidi(last)) {
+				midis.push(last + 1)
+			}
+
+			const notes = midis.map((midi, i) => {
+				const skips = midis.slice(0, i).filter(isAccidentalMidi).length
+				const offset = skips * WIDTH_WHITE
+
+				const note = Midi.midiToNoteName(midi)
+				const chroma = Note.chroma(note)!
+				const accidental = isAccidental(chroma)
+
 				return {
 					midi,
-					octave,
-					position,
+					offset,
 					accidental,
+					rect: {
+						key: midi,
+						x: (i * WIDTH_WHITE - offset) + (accidental ? OFFSET_BLACK[chroma] : 0),
+						width: accidental ? WIDTH_BLACK : WIDTH_WHITE,
+						height: accidental ? HEIGHT_BLACK : HEIGHT_WHITE,
+					}
 				}
 			})
-			const first = range[0]
-			const last = range[range.length - 1]
-			if (first.accidental) {
-				range.unshift({
-					midi: first.midi - 1,
-					octave: first.position === 0 ? first.octave - 1 : first.octave,
-					position: first.position === 0 ? 11 : first.position - 1,
-					accidental: false,
-				})
-			}
-			if (last.accidental) {
-				range.push({
-					midi: first.midi + 1,
-					octave: first.position === 11 ? first.octave + 1 : first.octave,
-					position: first.position === 11 ? 0 : first.position + 1,
-					accidental: false,
-				})
-			}
-			return range
+
+			return [
+				notes.filter((note) => !note.accidental),
+				notes.filter((note) => note.accidental)
+			]
 		},
 		[start, length]
 	)
-
-	const width = React.useMemo(
-		() => HEIGHT_WHITE * notes.filter((note) => !note.accidental).length,
-		[notes]
-	)
-
 
 	if (!length) {
 		return (<h1>No keys in midi range: [{low},{high}]</h1>)
 	}
 
 	return (
-		<svg viewBox={`0 0 ${width} ${HEIGHT_WHITE}`}>
-			{notes.map((note, i) => {
-				const extra = keyProps?.[note.midi]
-				return (
+		<svg {...svgProps} viewBox={`0 0 ${WIDTH_WHITE * whiteKeys.length} ${HEIGHT_WHITE}`}>
+
+			<g fill='white' stroke='black'>
+				{whiteKeys.map((note, i) => (
+					<rect
+						{...note.rect}
+						{...keyProps?.[note.midi]}
+					/>
+				))}
+			</g>
+
+			<g fill='black' fontSize={12} textAnchor='middle'>
+				{whiteKeys.map((note, i) => (
+					<text
+						key={note.midi}
+						x={(i * WIDTH_WHITE) + (WIDTH_WHITE / 2)}
+						y={HEIGHT_WHITE - 10}
+					>
+						{Midi.midiToNoteName(note.midi, { sharps: true, })}
+					</text>
+				))}
+			</g>
+
+			<g fill='black' stroke='black'>
+				{blackKeys.map((note, i) => (
 					<rect
 						stroke="black"
-						fill={note.accidental ? 'black' : 'white'}
-						key={note.midi}
+						{...note.rect}
+						{...keyProps?.[note.midi]}
 					/>
-				)
-			})}
+				))}
+			</g>
 		</svg>
 	)
 }

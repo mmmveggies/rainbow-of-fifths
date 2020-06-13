@@ -1,17 +1,31 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { Alert } from 'antd'
+import WebMidi from 'webmidi'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+import './index.css';
+import 'antd/dist/antd.css'
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const render = (node: React.ReactElement) => {
+  ReactDOM.render(node, document.getElementById('root'))
+}
+
+WebMidi.enable((err) => {
+  if (err) {
+    render(
+      <Alert
+        type='error'
+        message='Fatal WebMidi Error'
+        description={<code><pre>{JSON.stringify(err, null, 2)}</pre></code>}
+      />
+    )
+    return
+  }
+
+  render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  )
+})

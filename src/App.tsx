@@ -1,26 +1,35 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { KeyboardSource } from './components';
+import { useSources } from './hooks';
+import { Card, Divider } from 'antd';
 
-function App() {
+export default function App() {
+  const sources = useSources()
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <>
+      <h1>Sources</h1>
+      {sources.map((source) => (
+        <Card
+          key={source.id}
+          title={(
+            <>
+              <h3>
+                {source.name}
+                <Divider type='vertical' />
+                {source.manufacturer}
+                <Divider type='vertical' />
+                {source.id}
+              </h3>
+            </>
+          )}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <KeyboardSource
+            source={source}
+            svgProps={{ width: '100%' }}
+          />
+        </Card>
+      ))}
+    </>
   );
 }
-
-export default App;
