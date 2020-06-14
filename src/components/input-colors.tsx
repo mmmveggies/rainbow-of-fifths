@@ -12,7 +12,7 @@ const names = Array.from({ length: 12 }, (_, i) => {
 	).join(' / ')
 })
 
-export function ColorSelector() {
+export function InputColors() {
 	const [colors, setColors] = useColors()
 
 	return (
@@ -26,7 +26,7 @@ export function ColorSelector() {
 		>
 			<Button
 				block
-				onClick={() => setColors([])}
+				onClick={() => setColors(undefined)}
 			>
 				Reset
 			</Button>

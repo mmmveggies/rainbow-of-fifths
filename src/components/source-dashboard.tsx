@@ -6,7 +6,8 @@ import { mapObj } from '../utils';
 import { KeyboardSource } from './keyboard-source';
 import { Row, Col } from 'antd';
 import { CircleOfFifths } from './circle-of-fifths';
-import { ColorSelector } from './color-selector';
+import { InputColors } from './input-colors';
+import { InputSizes } from './input-sizes';
 import { Midi, Note, Scale } from '@tonaljs/tonal';
 
 export interface SourceDashboardProps {
@@ -45,7 +46,6 @@ export function SourceDashboard({
 		})
 	})
 
-
 	return (
 		<>
 			<Row>
@@ -55,8 +55,11 @@ export function SourceDashboard({
 						pathProps={pathProps}
 					/>
 				</Col>
-				<Col span={12}>
-					<ColorSelector />
+				<Col span={6}>
+					<InputColors />
+				</Col>
+				<Col span={6}>
+					<InputSizes />
 				</Col>
 			</Row>
 			<Row>
