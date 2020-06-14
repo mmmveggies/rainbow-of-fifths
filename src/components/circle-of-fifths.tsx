@@ -1,33 +1,59 @@
 import React from 'react'
 import { Midi, Note } from '@tonaljs/tonal'
+import { getDonutSegments } from '../utils'
 
-const NUM_SEGMENTS = 12
-const SIZE = 400
-const UNIT = 2 * Math.PI / NUM_SEGMENTS
-const R = SIZE / 2 * (3 / 4)
+const CHROMA = 12
 
 export interface CircleOfFifthsProps {
+	size?: number
 	svgProps?: React.SVGProps<SVGSVGElement>
+	pathProps?: React.SVGProps<SVGPathElement>[][]
 }
 
 export function CircleOfFifths({
-	svgProps
+	size = 400,
+	svgProps,
+	pathProps,
 }: CircleOfFifthsProps) {
+	const donuts = React.useMemo(
+		() => {
+			const scale = (x: number) => (
+				size / 2 * (CHROMA - x) / CHROMA
+			)
+
+			return Array.from({ length: CHROMA }, (_, i) => (
+				getDonutSegments({
+					cX: size / 2,
+					cY: size / 2,
+					r0: scale(i),
+					r1: scale(i + 1),
+				})
+			))
+		},
+		[size],
+	)
 
 	return (
-		<svg {...svgProps} viewBox={`0 0 ${SIZE} ${SIZE}`}>
-			<g stroke='black' fill='black' strokeWidth='2'>
-				{Array.from({ length: NUM_SEGMENTS }, (_, i) => {
-					const d = [
-						`M ${SIZE / 2} ${SIZE / 2}`,
-						`m ${R * Math.sin(UNIT * i)} ${R * Math.cos(UNIT * i)}`,
-						`a 10 10 0 0 0 10 10`,
-						`l 20 20`
-					].join('\n')
-					return (
-						<path key={i} d={d} />
-					)
-				})}
+		<svg {...svgProps} viewBox={`0 0 ${size} ${size}`}>
+			<g stroke='black' fill='white' strokeWidth='0.5'>
+				{donuts.map(({ paths }, i) => (
+					<g key={i}>
+						{paths.map((d, j) => {
+							// props are passed in radially
+							// spiralling inwards from 12 oclock
+							const scaleIndex = (j * 5) % 12
+							const degreeIndex = (i + 4) % 12
+							const props = pathProps?.[scaleIndex]?.[degreeIndex]
+							return (
+								<path
+									key={j}
+									{...props}
+									d={d}
+								/>
+							)
+						})}
+					</g>
+				))}
 			</g>
 		</svg>
 	)

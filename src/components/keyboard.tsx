@@ -115,6 +115,7 @@ export function Keyboard({
 			<g fill='white' stroke='black'>
 				{whiteKeys.map((note, i) => (
 					<rect
+						key={i}
 						{...note.rect}
 						{...keyProps?.[note.midi]}
 					/>
@@ -136,6 +137,7 @@ export function Keyboard({
 			<g fill='black' stroke='black'>
 				{blackKeys.map((note, i) => (
 					<rect
+						key={i}
 						stroke="black"
 						{...note.rect}
 						{...keyProps?.[note.midi]}

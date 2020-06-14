@@ -8,7 +8,10 @@ export function useSources() {
 		() => {
 			const onConnected = ({ port }: WebMidiEventConnected) => {
 				if (port.type === 'input') {
-					setSources((curr) => [...curr, port])
+					setSources((curr) => {
+						const next = curr.filter((source) => source.id !== port.id)
+						return [...next, port]
+					})
 				}
 			}
 			const onDisconnected = ({ port }: WebMidiEventDisconnected) => {
