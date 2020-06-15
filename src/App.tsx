@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSources, ProvideShared } from './hooks';
-import { Card, Divider, Alert } from 'antd';
+import { Card, Divider, Alert, Row, Col } from 'antd';
 import { SourceDashboard } from './components/source-dashboard';
 
 const empty = (
@@ -15,7 +15,14 @@ export default function App() {
 
   return (
     <ProvideShared>
-      <h1>Rainbow of Fifths</h1>
+      <Row align='middle' gutter={8}>
+        <Col>
+          <h1>Rainbow of Fifths</h1>
+        </Col>
+        <Col>
+          <a href="https://github.com/mmmveggies/rainbow-of-fifths">view source or give feedback on GitHub</a>
+        </Col>
+      </Row>
       {sources.length ? sources.map((source) => (
         <Card
           key={source.id}
