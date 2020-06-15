@@ -1,15 +1,22 @@
 import React from 'react';
 import { useSources, ProvideShared } from './hooks';
-import { Card, Divider } from 'antd';
+import { Card, Divider, Alert } from 'antd';
 import { SourceDashboard } from './components/source-dashboard';
+
+const empty = (
+  <Alert
+    type='warning'
+    message='Please connect a midi input device'
+  />
+)
 
 export default function App() {
   const sources = useSources()
 
   return (
     <ProvideShared>
-      <h1>Sources</h1>
-      {sources.map((source) => (
+      <h1>Rainbow of Fifths</h1>
+      {sources.length ? sources.map((source) => (
         <Card
           key={source.id}
           title={(
@@ -26,7 +33,7 @@ export default function App() {
         >
           <SourceDashboard source={source} />
         </Card>
-      ))}
+      )) : empty}
     </ProvideShared>
   );
 }

@@ -18,22 +18,23 @@ export function CircleOfFifths({
 }: CircleOfFifthsProps) {
 	const [sizes] = useSizes()
 
-	const size = sum(sizes) * 2
+	const center = sum(sizes)
+	const size = center * 2
 
 	const donuts = React.useMemo(
 		() => {
 			return Array.from({ length: CHROMA }, (_, i) => {
-				const r0 = (size / 2) - sum(sizes.slice(0, i))
-				const r1 = (size / 2) - sum(sizes.slice(0, i + 1))
+				const r0 = center - sum(sizes.slice(0, i))
+				const r1 = center - sum(sizes.slice(0, i + 1))
 				return getDonutSegments({
-					cX: size / 2,
-					cY: size / 2,
+					cX: center,
+					cY: center,
 					r0,
 					r1,
 				})
 			})
 		},
-		[size, sizes],
+		[center, sizes],
 	)
 
 
@@ -44,8 +45,8 @@ export function CircleOfFifths({
 				{donuts.map(({ paths }, i) => (
 					<g key={i}>
 						{paths.map((d, j) => {
-							// props are passed in radially
-							// spiralling inwards from 12 oclock
+							// props are ordered spiralling clockwise
+							// and inwards from 12 oclock
 							const scaleIndex = (j * 5) % 12
 							const degreeIndex = (i + 4) % 12
 							const props = pathProps?.[scaleIndex]?.[degreeIndex]

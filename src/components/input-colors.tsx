@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Input, Typography, Button } from 'antd'
+import { Input, Typography, Button, Popconfirm } from 'antd'
 import { Midi } from '@tonaljs/tonal'
 import { useColors } from '../hooks'
 
@@ -24,12 +24,14 @@ export function InputColors() {
 				justifyContent: 'space-evenly'
 			}}
 		>
-			<Button
-				block
-				onClick={() => setColors(undefined)}
+			<Popconfirm
+				onConfirm={() => setColors(undefined)}
+				title='Reset to default colors?'
 			>
-				Reset
-			</Button>
+				<Button block>
+					Reset Colors
+				</Button>
+			</Popconfirm>
 			{Array.from({ length: 12 }, (_, i) => (
 				<Input
 					key={i}

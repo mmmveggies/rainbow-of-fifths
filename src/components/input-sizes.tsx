@@ -1,7 +1,7 @@
 import React from 'react'
-import { Form, Input, Typography, Button, InputNumber } from 'antd'
+import { Input, Typography, Button, Popconfirm } from 'antd'
 import { Midi } from '@tonaljs/tonal'
-import { useColors, useSizes } from '../hooks'
+import { useSizes } from '../hooks'
 
 const names = Array.from({ length: 12 }, (_, i) => {
 	return Array.from(
@@ -24,12 +24,14 @@ export function InputSizes() {
 				justifyContent: 'space-evenly'
 			}}
 		>
-			<Button
-				block
-				onClick={() => setSizes(undefined)}
+			<Popconfirm
+				onConfirm={() => setSizes(undefined)}
+				title='Reset to default sizes?'
 			>
-				Reset
-			</Button>
+				<Button block>
+					Reset Sizes
+				</Button>
+			</Popconfirm>
 			{Array.from({ length: 12 }, (_, i) => (
 				<Input
 					key={i}
@@ -39,7 +41,7 @@ export function InputSizes() {
 					size='large'
 					value={sizes[i]}
 					onChange={({ target: { value } }) => {
-						if (value) {
+						if (value === '') {
 							return
 						}
 						const next = sizes.slice()
